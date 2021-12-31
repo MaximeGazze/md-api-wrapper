@@ -1,12 +1,12 @@
 package requests
 
-import MangaResponse
-import com.beust.klaxon.JsonObject
+import builders.MangaSearchOptionBuilder
 import io.ktor.client.call.receive
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpMethod
 import io.ktor.http.isSuccess
+import models.MangaResponse
 import requests.RequestClient.Companion.client
 
 open class Request(
@@ -18,10 +18,10 @@ open class Request(
     val onSuccess: ((res: HttpResponse, data: Any?) -> Unit)? = null,
     val onError: ((res: HttpResponse, data: Any?) -> Unit)? = null,
 ) {
-    fun queryParamsToString(): String = reqQuery?.map { "${it.key}=${it.value}" }?.joinToString("&", "?") ?: ""
-
     suspend inline fun <reified T> call(): T {
-        val res: HttpResponse = client.request("$url${queryParamsToString()}") {
+        val res: HttpResponse = client.request(
+            "$url${reqQuery?.map { "${it.key}=${it.value}" }?.joinToString("&", "?") ?: ""}",
+        ) {
             method = httpMethod
             reqHeaders?.forEach { headers.append(it.key, it.value) }
             if (reqBody != null) body = reqBody
@@ -36,51 +36,40 @@ open class Request(
     }
 }
 
-class MangaSearchOptionBuilder {
-    var title: String? = null
-    var limit: Int? = null
-    var offset: Int? = null
-    var authors: List<String>? = null
-    var artists: List<String>? = null
-    var year: Int? = null
-    // val includedTags: List<Tag>? = null,
-    var includedTagsMode: String? = null // enum: "AND" "OR"
-    // val excludedTags: List<Tag>? = null,
-    var excludedTagsMode: String? = null // enum: "AND" "OR"
-    var status: List<String>? = null // enum: "ongoing" "completed" "hiatus" "cancelled"
-    var originalLanguage: List<String>? = null
-    var excludedoriginalLanguage: List<String>? = null
-    var availableTranslatedLanguage: List<String>? = null
-    var publicationDemographic: List<String>? = null // enum: "shounen" "shoujo" "josei" "seinen" "none"
-    var ids: List<String>? = null
-    var contentRating: List<String>? = null // enum: "safe" "suggestive" "erotica" "pornographic"
-    var createdAtSince: String? = null
-    var updatedAtSince: String? = null
-    var order: Map<String, String>? = null
-    var includes: List<String>? = null
-    var hasAvailableChapters: Boolean? = null // needs conversion to String
-    var group: String? = null
-}
 
-class MangaSearchRequest(options: MangaSearchOptionBuilder.() -> Unit = {}) : Request("https://api.mangadex.org/manga", HttpMethod.Get)
+/*
+For the tags I want to make an enum class with all tags corresponding to their uuid string value ex:
+enum class Tags {
+    Adventure("uuidString")
+}
+or whatever...
+ */
+
+class MangaSearchRequest(
+    options: MangaSearchOptionBuilder.() -> Unit = {}
+) : Request(
+    "https://api.mangadex.org/manga",
+    HttpMethod.Get,
+) // Implement some way of building the query params from the options builder
 
 suspend fun main(args: Array<String>) {
-    val lol: MangaResponse = Request(
-        "https://api.mangadex.org/manga",
-        HttpMethod.Get,
-        mapOf("limit" to 1),
-        mapOf("contentType" to "application/json"),
-        JsonObject(mapOf()).toString(),
-        { res, data ->
-            println("ok: $data")
-        },
-        { res, data ->
-            println("err")
-        }
-    ).call()
-    println("lol $lol")
+//    val lol: MangaResponse = Request(
+//        "https://api.mangadex.org/manga",
+//        HttpMethod.Get,
+//        mapOf("limit" to 1),
+//        mapOf("contentType" to "application/json"),
+//        JsonObject(mapOf()).toString(),
+//        { res, data ->
+//            println("ok: $data")
+//        },
+//        { res, data ->
+//            println("err")
+//        }
+//    ).call()
+//    println("lol $lol")
 
     val manga: MangaResponse = MangaSearchRequest {
-        title = "lol"
+        title = "classroom"
     }.call()
+    println(manga)
 }

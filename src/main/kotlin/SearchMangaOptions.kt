@@ -1,3 +1,5 @@
+import models.MangaTag
+
 class SearchMangaOptions(
     title: String? = null,
     limit: Int? = null,
@@ -5,9 +7,9 @@ class SearchMangaOptions(
     authors: List<String>? = null,
     artists: List<String>? = null,
     year: Int? = null,
-    includedTags: List<Tag>? = null,
+    includedTags: List<MangaTag>? = null,
     includedTagsMode: String? = null, // enum: "AND" "OR"
-    excludedTags: List<Tag>? = null,
+    excludedTags: List<MangaTag>? = null,
     excludedTagsMode: String? = null, // enum: "AND" "OR"
     status: List<String>? = null, // enum: "ongoing" "completed" "hiatus" "cancelled"
     originalLanguage: List<String>? = null,
