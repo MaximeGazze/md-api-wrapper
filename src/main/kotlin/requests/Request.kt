@@ -3,13 +3,14 @@ package requests
 import builders.MangaSearchOptions
 import io.ktor.client.request.request
 import io.ktor.http.HttpMethod
+import models.MangaListResponse
 import models.MangaResponse
 import requests.RequestClient.Companion.baseUrl
 import requests.RequestClient.Companion.client
 
-suspend inline fun mangaSearchRequest(
+suspend fun mangaSearch(
     options: MangaSearchOptions.() -> Unit = {}
-): MangaResponse {
+): MangaListResponse {
     val opt = MangaSearchOptions().apply(options)
     val query = opt.getQuery()
     val url = "$baseUrl/manga${query?.map { "${it.key}=${it.value}" }?.joinToString("&", "?") ?: ""}"
@@ -19,13 +20,25 @@ suspend inline fun mangaSearchRequest(
     ) { HttpMethod.Get }
 }
 
+suspend fun mangaSearchById(
+    id: String,
+): MangaResponse {
+    val url = "$baseUrl/manga/$id"
+    return client.request(
+        url,
+    ) { HttpMethod.Get }
+}
+
 suspend fun main() {
-    val manga = mangaSearchRequest {
+    val manga = mangaSearch {
         title = ""
         limit = 1
         offset = 1
     }
     println(manga.data[0].id)
+
+    val manga2 = mangaSearchById("333f4d22-7753-4e3b-b0da-0a69b2cdce4f")
+    println(manga2.data.attributes.altTitles[0]["en"])
 }
 
 /*

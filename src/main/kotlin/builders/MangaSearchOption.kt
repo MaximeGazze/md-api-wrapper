@@ -37,8 +37,6 @@ class MangaSearchOptions {
         }
         return map.ifEmpty { null }
     }
-
-    override fun toString(): String = title ?: "null"
 }
 
 /*

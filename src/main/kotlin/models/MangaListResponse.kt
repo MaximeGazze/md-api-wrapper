@@ -1,7 +1,7 @@
 package models
 
-data class MangaResponse(
+data class MangaListResponse(
     val result: String,
     val response: String,
-    val data: Manga,
+    val data: List<Manga>,
 )
