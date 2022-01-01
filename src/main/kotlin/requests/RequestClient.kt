@@ -7,6 +7,7 @@ import io.ktor.client.features.json.JsonFeature
 
 class RequestClient {
     companion object {
+        val baseUrl = "https://api.mangadex.org"
         val client = HttpClient(CIO) {
             expectSuccess = false
             install(JsonFeature) {
