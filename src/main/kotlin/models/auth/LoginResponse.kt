@@ -1,10 +1,9 @@
-package models
+package models.auth
 
 import models.common.ApiError
 
-data class MangaResponse(
+data class LoginResponse(
     val result: String,
-    val response: String,
     val errors: List<ApiError>,
-    val data: Manga,
+    val token: Token,
 )

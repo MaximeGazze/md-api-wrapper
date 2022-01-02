@@ -1,4 +1,4 @@
-package models
+package models.auth
 
 data class Token(
     val session: String,

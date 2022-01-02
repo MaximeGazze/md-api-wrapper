@@ -8,6 +8,7 @@ import io.ktor.client.features.json.JsonFeature
 class RequestClient {
     companion object {
         val baseUrl = "https://api.mangadex.org"
+
         val client = HttpClient(CIO) {
             expectSuccess = false
             install(JsonFeature) {
@@ -16,12 +17,10 @@ class RequestClient {
                     disableHtmlEscaping()
                 }
             }
-//            HttpResponseValidator {
-//                validateResponse { response: HttpResponse ->
-//                    when (response.status.value) {
-//                        in 300..399 -> throw RedirectResponseException(response, "")
-//                        in 400..499 -> throw ClientRequestException(response, "")
-//                        in 500..599 -> throw ServerResponseException(response, "")
+//            install(Auth) {
+//                bearer {
+//                    loadTokens {
+//                        BearerTokens(session, refresh)
 //                    }
 //                }
 //            }
