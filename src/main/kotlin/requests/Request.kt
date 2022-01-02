@@ -1,32 +1,29 @@
 package requests
 
 import builders.MangaSearchOptions
-import io.ktor.client.request.request
-import io.ktor.http.HttpMethod
+import com.beust.klaxon.JsonObject
+import io.ktor.client.request.*
+import io.ktor.http.*
+import models.AuthResponse
 import models.MangaListResponse
 import models.MangaResponse
 import requests.RequestClient.Companion.baseUrl
 import requests.RequestClient.Companion.client
 
-suspend fun mangaSearch(
-    options: MangaSearchOptions.() -> Unit = {}
-): MangaListResponse {
-    val opt = MangaSearchOptions().apply(options)
-    val query = opt.getQuery()
-    val url = "$baseUrl/manga${query?.map { "${it.key}=${it.value}" }?.joinToString("&", "?") ?: ""}"
-    println(url)
-    return client.request(
-        url,
-    ) { HttpMethod.Get }
+suspend fun mangaSearch(options: MangaSearchOptions.() -> Unit = {}): MangaListResponse {
+    val mangaOptions = MangaSearchOptions().apply(options)
+    val query = mangaOptions.getQuery()
+    return client.request("$baseUrl/manga${query?.map { "${it.key}=${it.value}" }?.joinToString("&", "?") ?: ""}")
 }
 
-suspend fun mangaSearchById(
-    id: String,
-): MangaResponse {
-    val url = "$baseUrl/manga/$id"
-    return client.request(
-        url,
-    ) { HttpMethod.Get }
+suspend fun mangaSearchById(id: String): MangaResponse = client.request("$baseUrl/manga/$id")
+
+suspend fun auth(username: String, password: String): AuthResponse {
+    return client.request("$baseUrl/auth/login") {
+        method = HttpMethod.Post
+        contentType(ContentType.Application.Json)
+        body = JsonObject(mapOf("username" to username, "email" to username, "password" to password))
+    }
 }
 
 suspend fun main() {
@@ -39,6 +36,9 @@ suspend fun main() {
 
     val manga2 = mangaSearchById("333f4d22-7753-4e3b-b0da-0a69b2cdce4f")
     println(manga2.data.attributes.altTitles[0]["en"])
+
+    val token = auth("QuackersXD", "M@xime11")
+    println(token)
 }
 
 /*

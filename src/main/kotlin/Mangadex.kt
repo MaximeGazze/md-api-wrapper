@@ -1,8 +1,8 @@
-class Mangadex {
-    fun getManga(
-        mangaId: String,
-        options: SearchMangaOptions?,
-    ) {
-
-    }
-}
+//class Mangadex {
+//    fun getManga(
+//        mangaId: String,
+//        options: SearchMangaOptions?,
+//    ) {
+//
+//    }
+//}
